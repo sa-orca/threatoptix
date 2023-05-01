@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: threat_optix-monitor
+  namespace: threat_optix-monitor-ns
+  labels:
+    k8s-app: threat_optix-monitor
+spec:
+  selector:
+    matchLabels:
+      name: threat_optix-monitor
+  template:
+    metadata:
+      labels:
+        name: threat_optix-monitor
+    spec:
+      containers:
+        - name: threat_optix-monitor
+          image: 956327719689.dkr.ecr.us-east-1.amazonaws.com/monitor-client
+          resources:
+            limits:
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log

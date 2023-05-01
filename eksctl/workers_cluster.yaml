@@ -1,0 +1,32 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: eks-to-kafka-workers
+  region: us-east-1
+  version: "1.24"
+iam:
+  withOIDC: true
+managedNodeGroups:
+  - name: to-kafka-workers-ng
+    amiFamily: AmazonLinux2
+    instanceType: t3.2xlarge
+    desiredCapacity: 3
+    minSize: 2
+    maxSize: 5
+    volumeSize: 120
+    volumeType: gp2
+    labels:
+      nodegroup-type: kafka-app-workloads
+    tags:
+      nodegroup-name: to-kafka-workers-ng
+      nodegroup-role: worker
+    ssh:
+      enableSsm: true # use aws ssm instead of ssh - no need to open port 22
+    iam:
+      withAddonPolicies:
+        albIngress: true
+        autoScaler: true
+        cloudWatch: true
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]

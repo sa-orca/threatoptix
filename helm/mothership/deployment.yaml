@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: to-mothership
+  namespace: threatoptix
+  labels:
+    app: to-mothership-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: to-mothership-app
+  template:
+    metadata:
+      labels:
+        app: to-mothership-app
+    spec:
+      containers:
+        - name: to-mothership-app
+          image: 956327719689.dkr.ecr.us-east-1.amazonaws.com/to-mothership:1.0.3
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "8Gi"
+              cpu: "2000m"
+              ephemeral-storage: "8Gi"
+            limits:
+              cpu: "4000m"
+              memory: "16Gi"
+              ephemeral-storage: "16Gi"
+      tolerations:
+        - effect: NoSchedule
+          key: orcasecurity.io/services
+          operator: Exists

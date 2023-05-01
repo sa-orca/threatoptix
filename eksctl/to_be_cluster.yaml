@@ -1,0 +1,30 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: eks-to-be
+  region: us-east-1
+  version: "1.24"
+managedNodeGroups:
+  - name: to-be-ng
+    amiFamily: AmazonLinux2
+    instanceType: m5.4xlarge
+    desiredCapacity: 3
+    minSize: 2
+    maxSize: 5
+    volumeSize: 120
+    volumeType: gp2
+    labels:
+      nodegroup-type: to-be-workloads
+    tags:
+      nodegroup-name: to-be-ng
+      nodegroup-role: worker
+    ssh:
+      enableSsm: true # use aws ssm instead of ssh - no need to open port 22
+    iam:
+      withAddonPolicies:
+        albIngress: true
+        autoScaler: true
+        cloudWatch: true
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]

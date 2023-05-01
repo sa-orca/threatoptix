@@ -1,0 +1,27 @@
+static_resources:
+  listeners:
+    - address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 8080
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.tcp_proxy
+              typed_config:
+                '@type': "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy"
+                stat_prefix: tcp_proxy
+                cluster: mothership_cluster
+  clusters:
+    - name: mothership_cluster
+      connect_timeout: 1s
+      type: strict_dns
+      lb_policy: MAGLEV
+      load_assignment:
+        cluster_name: mothership_cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: to-mothership
+                      port_value: 8080

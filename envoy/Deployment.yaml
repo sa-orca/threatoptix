@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: to-proxy
+  namespace: threatoptix
+  labels:
+    app: to-proxy-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: to-proxy-app
+  template:
+    metadata:
+      labels:
+        app: to-proxy-app
+    spec:
+      containers:
+        - name: to-proxy-app
+          image: 956327719689.dkr.ecr.us-east-1.amazonaws.com/to-envoy-proxy:1.0.1
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 2Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
+          ports:
+            - containerPort: 8080
+      tolerations:
+        - effect: NoSchedule
+          key: orcasecurity.io/services
+          operator: Exists

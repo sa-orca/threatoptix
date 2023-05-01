@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: to-redis
+  namespace: threatoptix
+  labels:
+    app: to-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: to-redis
+  template:
+    metadata:
+      labels:
+        app: to-redis
+    spec:
+      hostname: to-redis-1
+      subdomain: to-redis-subdomain
+      containers:
+        - name: to-redis
+          image: 956327719689.dkr.ecr.us-east-1.amazonaws.com/to-redis:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: to-redis-pv
+              mountPath: /data
+      imagePullSecrets:
+        - name: dockerdev
+      volumes:
+        - name: to-redis-pv
+          persistentVolumeClaim:
+            claimName: to-redis-pvc
+      tolerations:
+        - effect: NoSchedule
+          key: orcasecurity.io/services
+          operator: Exists
